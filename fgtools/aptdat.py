@@ -46,34 +46,42 @@ class Code:
 			return self.code != other
 
 class CodeEnum:
-	def __init__(self, names, codes):
-		self._codemap = {}
-		for name, code in zip(names, codes):
-			codeobject = Code(name, code)
-			setattr(self, name, codeobject)
-			self._codemap[code] = codeobject
-	
-	def __getitem__(self, key):
-		return self._codemap[key]
+    def __init__(self, names, codes, default_key=None):
+        self._codemap = {}
+        for name, code in zip(names, codes):
+            codeobject = Code(name, code)
+            setattr(self, name, codeobject)
+            self._codemap[code] = codeobject
+
+        self._default_key = default_key
+
+    def __getitem__(self, key):
+        if key in self._codemap:
+            return self._codemap[key]
+        elif self._default_key is not None:
+            return self._codemap[self._default_key]
+        else:
+            raise KeyError(f"Key {key} not found and no default specified.")
+
 
 SurfaceCode = CodeEnum(
 	("Asphalt", "Concrete", "Grass", "Dirt", "Gravel", "DryLakebed", "Water", "SnowIce", "Transparent"),
-	list(range(1, 6)) + list(range(12, 16))
+	list(range(1, 6)) + list(range(12, 16)),1
 )
 
 RunwayShoulderCode = CodeEnum(
 	("NoShoulder", "Asphalt", "Concrete"),
-	range(3)
+	range(3),2
 )
 
 RunwayMarkingCode = CodeEnum(
 	("NoMarkings", "Visual", "NonPrecision", "Precision", "UKNonPrecision", "UKPrecision"),
-	range(6)
+	range(6),5
 )
 
 ApproachLightsCode = CodeEnum(
 	("NoLights", "ALSF_I", "ALSF_II", "Calvert", "CalvertILS", "SSALR", "SSALF", "SALS", "MALSR", "MALSF", "MALS", "ODALS", "RAIL"),
-	range(13)
+	range(13),12
 )
 
 LineTypeCode = CodeEnum(
@@ -93,7 +101,7 @@ LineTypeCode = CodeEnum(
 		"SolidOrangeBordered", "SolidBlueBordered", "SolidGreenBordered"
 	),
 	tuple(range(15)) + tuple(range(51, 65)) + tuple(range(19, 26)) + (30, 31, 32) + (40, 41, 42) + \
-		tuple(range(70, 76)) + (80, 81, 82) + (90, 91, 92)
+		tuple(range(70, 76)) + (80, 81, 82) + (90, 91, 92), 15
 )
 
 LineLightTypeCode = CodeEnum(
@@ -101,32 +109,32 @@ LineLightTypeCode = CodeEnum(
 		"TaxiwayCenter", "TaxiwayEdge", "Hold", "RunwayHold", "TaxiwayCenterRunwaySafety",
 		"TaxiwayEdgeDangerous", "TaxiwayLeadOff", "TaxiwayLeadOffAmber"
 	),
-	range(101, 109)
+	range(101, 109), 101
 )
 
 BeaconTypeCode = CodeEnum(
 	("NoBeacon", "CivilianAirport", "Seaport", "Heliport", "MilitaryAirport"),
-	range(5)
+	range(5),1
 )
 
 SignSizeCode = CodeEnum(
 	("TaxiwaySmall", "TaxiwayMedium", "TaxiwayLarge", "DistanceRemainingLarge", "DistanceRemainingSmall"),
-	range(1, 6)
+	range(1, 6), 2
 )
 
 LightingObjectCode = CodeEnum(
 	("VASI", "PAPI4L", "PAPI4R", "PAPISpaceShuttle", "TriColorVASI", "RunwayGuard"),
-	range(1, 7)
+	range(1, 7), 2
 )
 
 REILCode = CodeEnum(
 	("NoREIL", "OmnidirREIL", "UnidirREIL"),
-	range(3)
+	range(3), 1
 )
 
 AirportType = CodeEnum(
 	("Land", "Sea", "Heli"),
-	(1, 16, 17)
+	(1, 16, 17), 1
 )
 
 class Object:
